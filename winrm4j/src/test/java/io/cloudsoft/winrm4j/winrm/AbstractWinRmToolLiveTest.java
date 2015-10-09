@@ -132,14 +132,14 @@ public class AbstractWinRmToolLiveTest {
     	return callWithRetries(new Callable<WinRmToolResponse>() {
 			@Override public WinRmToolResponse call() throws Exception {
 		        WinRmTool winRmTool = WinRmTool.connect(VM_HOST + ":" + VM_PORT, VM_USER, VM_PASSWORD);
-		        return winRmTool.executePs(script);
+		        return winRmTool.executePsScript(script);
 			}});
     }
 
     protected WinRmToolResponse executePs(final WinRmTool winRmTool, final List<String> script) {
     	return callWithRetries(new Callable<WinRmToolResponse>() {
 			@Override public WinRmToolResponse call() throws Exception {
-		        return winRmTool.executePs(script);
+		        return winRmTool.executePsScript(script);
 			}});
     }
     

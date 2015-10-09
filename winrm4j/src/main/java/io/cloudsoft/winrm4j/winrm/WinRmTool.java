@@ -25,11 +25,24 @@ public class WinRmTool {
         this.password = password;
     }
 
+    /**
+     * Execute a list of Windows Native commands as one command.
+     * The method translates the list of commands to a single String command with a <code>"\r\n"</code> delimiter and a terminating one.
+     * @param commands
+     * @deprecated since 0.2; Use the {@link #executeCommand(String)} instead and transform your commands list explicitly
+     */
+    @Deprecated
     public WinRmToolResponse executeScript(List<String> commands) {
-        return executeScript(joinScript(commands));
+        return executeCommand(joinScript(commands));
     }
 
-    public WinRmToolResponse executeScript(String commands) {
+    /**
+     * Executes a Native Windows command.
+     * It is creating a new Shell on the destination host each time it is being called.
+     * @param command
+     * @since 0.2
+     */
+    public WinRmToolResponse executeCommand(String command) {
         Builder builder = WinRmClient.builder(getEndpointUrl());
         if (username != null && password != null) {
             builder.credentials(username, password);
@@ -40,7 +53,7 @@ public class WinRmTool {
         StringWriter err = new StringWriter();
 
         try {
-            int code = client.command(commands, out, err);
+            int code = client.command(command, out, err);
             return new WinRmToolResponse(out.toString(), err.toString(), code);
         } finally {
             client.disconnect();
@@ -58,8 +71,25 @@ public class WinRmTool {
         }
     }
 
-    public WinRmToolResponse executePs(List<String> commands) {
-        return executeScript(compilePs(joinPs(commands)));
+    /**
+     * Executes a Power Shell command.
+     * It is creating a new Shell on the destination host each time it is being called.
+     * @param psCommand
+     * @since 0.2
+     */
+    public WinRmToolResponse executePsCommand(String psCommand) {
+        return executeCommand(compilePs(psCommand));
+    }
+
+    /**
+     * Execute a list of Power Shell commands as one command.
+     * The method translates the list of commands to a single String command with a <code>"\r\n"</code> delimiter and a terminating one.
+     * @param commands
+     * @deprecated since 0.2; Use the {@link #executePsCommand(String)} instead and transform your commands list explicitly
+     */
+    @Deprecated
+    public WinRmToolResponse executePsScript(List<String> commands) {
+        return executeCommand(compilePs(joinPs(commands)));
     }
 
     private String compilePs(String psScript) {
