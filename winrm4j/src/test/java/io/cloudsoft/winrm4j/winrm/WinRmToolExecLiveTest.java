@@ -239,7 +239,7 @@ public class WinRmToolExecLiveTest extends AbstractWinRmToolLiveTest {
         String scriptPath = "C:\\myscript-"+makeRandomString(8)+".bat";
         copyTo(new ByteArrayInputStream(script.getBytes()), scriptPath);
 
-        WinRmToolResponse response = executePs(ImmutableList.of("& '"+scriptPath+"'"));
+        WinRmToolResponse response = executePsCommand("& '"+scriptPath+"'");
         String msg = "statusCode="+response.getStatusCode()+"; out="+response.getStdOut()+"; err="+response.getStdErr();
         assertEquals(response.getStatusCode(), 3, msg);
     }
@@ -347,7 +347,7 @@ public class WinRmToolExecLiveTest extends AbstractWinRmToolLiveTest {
     public void testExecPsExit1() throws Exception {
         // Single commands
         assertExecPsFails("exit 1");
-        assertExecPsFails(ImmutableList.of("exit 1"));
+        assertExecPsFails("exit 1");
         
         // Multi-part
         assertExecPsFails(ImmutableList.of(PS_ERR_ACTION_PREF_EQ_STOP, "Write-Host myline", "exit 1"));
@@ -372,11 +372,11 @@ public class WinRmToolExecLiveTest extends AbstractWinRmToolLiveTest {
         WinRmTool winRmTool = connect();
         
         Stopwatch stopwatch = Stopwatch.createStarted();
-        WinRmToolResponse response = executePs(winRmTool, ImmutableList.of("echo myline"));
+        WinRmToolResponse response = executePsCommand(winRmTool, "echo myline");
         assertSucceeded("echo myline", response, "myline", "", stopwatch);
         
         stopwatch = Stopwatch.createStarted();
-        WinRmToolResponse response2 = executePs(winRmTool, ImmutableList.of("echo myline"));
+        WinRmToolResponse response2 = executePsCommand(winRmTool, "echo myline");
         assertSucceeded("echo myline", response2, "myline", "", stopwatch);
     }
 
@@ -397,7 +397,7 @@ public class WinRmToolExecLiveTest extends AbstractWinRmToolLiveTest {
                 	String line = "myline" + makeRandomString(8);
                 	Stopwatch stopwatch = Stopwatch.createStarted();
                     try {
-    			        WinRmToolResponse response = executePs(winRmTool, ImmutableList.of("echo " + line));
+    			        WinRmToolResponse response = executePsCommand(winRmTool, "echo " + line);
     			        assertSucceeded("echo " + line, response, line, "", stopwatch);
                         LOG.info("Executed `echo "+line+"` in "+makeTimeStringRounded(stopwatch)+", in thread "+Thread.currentThread()+"; total "+counter.incrementAndGet()+" methods done");
     			        return null;

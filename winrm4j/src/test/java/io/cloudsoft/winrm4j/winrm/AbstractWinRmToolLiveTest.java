@@ -69,9 +69,9 @@ public class AbstractWinRmToolLiveTest {
     
     protected void assertExecPsFails(String cmd) {
         Stopwatch stopwatch = Stopwatch.createStarted();
-        assertFailed(cmd, executePs(ImmutableList.of(cmd)), stopwatch);
+        assertFailed(cmd, executePsCommand(cmd), stopwatch);
     }
-    
+
     protected void assertExecPsFails(List<String> cmds) {
         Stopwatch stopwatch = Stopwatch.createStarted();
         assertFailed(cmds, executePs(cmds), stopwatch);
@@ -89,7 +89,7 @@ public class AbstractWinRmToolLiveTest {
 
     protected void assertExecPsSucceeds(String cmd, String stdout, String stderr) {
         Stopwatch stopwatch = Stopwatch.createStarted();
-        assertSucceeded(cmd, executePs(ImmutableList.of(cmd)), stdout, stderr, stopwatch);
+        assertSucceeded(cmd, executePsCommand(cmd), stdout, stderr, stopwatch);
     }
 
     protected void assertExecPsSucceeds(List<String> cmds, String stdout, String stderr) {
@@ -124,25 +124,29 @@ public class AbstractWinRmToolLiveTest {
 			}});
     }
 
-    protected WinRmToolResponse executePs(String script) {
-    	return executePs(ImmutableList.of(script));
-    }
-    
-    protected WinRmToolResponse executePs(final List<String> script) {
+    protected WinRmToolResponse executePsCommand(final String command) {
     	return callWithRetries(new Callable<WinRmToolResponse>() {
 			@Override public WinRmToolResponse call() throws Exception {
 		        WinRmTool winRmTool = WinRmTool.connect(VM_HOST + ":" + VM_PORT, VM_USER, VM_PASSWORD);
-		        return winRmTool.executePs(script);
+		        return winRmTool.executePsCommand(command);
 			}});
     }
 
-    protected WinRmToolResponse executePs(final WinRmTool winRmTool, final List<String> script) {
+    protected WinRmToolResponse executePs(final List<String> script) {
+        return callWithRetries(new Callable<WinRmToolResponse>() {
+            @Override public WinRmToolResponse call() throws Exception {
+                WinRmTool winRmTool = WinRmTool.connect(VM_HOST + ":" + VM_PORT, VM_USER, VM_PASSWORD);
+                return winRmTool.executePsScript(script);
+            }});
+    }
+
+    protected WinRmToolResponse executePsCommand(final WinRmTool winRmTool, final String command) {
     	return callWithRetries(new Callable<WinRmToolResponse>() {
 			@Override public WinRmToolResponse call() throws Exception {
-		        return winRmTool.executePs(script);
+		        return winRmTool.executePsCommand(command);
 			}});
     }
-    
+
     protected WinRmTool connect() throws Exception {
     	return callWithRetries(new Callable<WinRmTool>() {
 			@Override public WinRmTool call() throws Exception {
@@ -184,9 +188,9 @@ public class AbstractWinRmToolLiveTest {
             } else {
                 chunk = Arrays.copyOf(inputData, bytesRead);
             }
-            executePs(ImmutableList.of("If ((!(Test-Path " + destination + ")) -or ((Get-Item '" + destination + "').length -eq " +
+            executePsCommand("If ((!(Test-Path " + destination + ")) -or ((Get-Item '" + destination + "').length -eq " +
                     expectedFileSize + ")) {Add-Content -Encoding Byte -path " + destination +
-                    " -value ([System.Convert]::FromBase64String(\"" + new String(BaseEncoding.base64().encode(chunk)) + "\"))}"));
+                    " -value ([System.Convert]::FromBase64String(\"" + new String(BaseEncoding.base64().encode(chunk)) + "\"))}");
             expectedFileSize += bytesRead;
         }
     }
