@@ -61,6 +61,7 @@
     <surefire.version>2.18.1</surefire.version>
     <testng.version>6.8.8</testng.version>
     <guava.version>18.0</guava.version>
+    <cxf.version>3.0.7</cxf.version>
   </properties>
 
   <modules>
