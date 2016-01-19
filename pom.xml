@@ -65,7 +65,6 @@
   </properties>
 
   <modules>
-    <module>service</module>
     <module>client</module>
     <module>winrm4j</module>
   </modules>

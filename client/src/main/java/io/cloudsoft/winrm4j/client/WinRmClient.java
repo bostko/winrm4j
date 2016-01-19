@@ -19,6 +19,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.service.model.ServiceInfo;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.ws.addressing.AddressingProperties;
 import org.apache.cxf.ws.addressing.JAXWSAConstants;
@@ -237,6 +238,10 @@ public class WinRmClient {
 //        bus.setProperty(AsyncHTTPConduit.USE_ASYNC, Boolean.TRUE);
 
         Client client = ClientProxy.getClient(winrm);
+        ServiceInfo si = client.getEndpoint().getEndpointInfo().getService();
+        si.setProperty("soap.force.doclit.bare", true);
+        si.setProperty("soap.no.validate.parts", true);
+
 
         BindingProvider bp = (BindingProvider)winrm;
 
