@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -292,8 +293,8 @@ public class WinRmClient {
         optCodepage.setName("WINRS_CODEPAGE");
         optCodepage.setValue("437");
         optSetCreate.getOption().add(optCodepage);
-        
-        ResourceCreated resourceCreated = winrm.create(shell, RESOURCE_URI, MAX_ENVELOPER_SIZE, operationTimeout, locale, optSetCreate);
+
+        ResourceCreated resourceCreated = winrm.create(new Holder(shell), RESOURCE_URI, MAX_ENVELOPER_SIZE, operationTimeout, locale, optSetCreate);
         shellId = getShellId(resourceCreated);
 
         shellSelector = new SelectorSetType();
