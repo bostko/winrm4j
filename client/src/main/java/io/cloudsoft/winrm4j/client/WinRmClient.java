@@ -23,6 +23,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import io.cloudsoft.winrm4j.client.ntlm.SpNegoNTLMSchemeFactory;
+import io.cloudsoft.winrm4j.client.wsman.*;
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -63,13 +64,6 @@ import io.cloudsoft.winrm4j.client.shell.ReceiveResponse;
 import io.cloudsoft.winrm4j.client.shell.Shell;
 import io.cloudsoft.winrm4j.client.shell.StreamType;
 import io.cloudsoft.winrm4j.client.transfer.ResourceCreated;
-import io.cloudsoft.winrm4j.client.wsman.CommandResponse;
-import io.cloudsoft.winrm4j.client.wsman.Locale;
-import io.cloudsoft.winrm4j.client.wsman.OptionSetType;
-import io.cloudsoft.winrm4j.client.wsman.OptionType;
-import io.cloudsoft.winrm4j.client.wsman.SelectorSetType;
-import io.cloudsoft.winrm4j.client.wsman.SelectorType;
-import io.cloudsoft.winrm4j.client.wsman.Signal;
 
 /**
  * TODO confirm if parallel commands can be called in parallel in one shell (probably not)!
@@ -414,8 +408,10 @@ public class WinRmClient {
 
         //TODO use different instances of service http://cxf.apache.org/docs/developing-a-consumer.html#DevelopingaConsumer-SettingConnectionPropertieswithContexts
         setActionToContext((BindingProvider) winrm, "http://schemas.xmlsoap.org/ws/2004/09/transfer/Create");
-        ResourceCreated resourceCreated = winrm.create(new Holder(shell), RESOURCE_URI, MAX_ENVELOPER_SIZE, operationTimeout, locale, optSetCreate);
-        shellId = getShellId(resourceCreated);
+        Create create = new Create();
+        create.setShell(shell);
+        CreateResponse resourceCreated = winrm.create(create, RESOURCE_URI, MAX_ENVELOPER_SIZE, operationTimeout, locale, optSetCreate);
+        shellId = create.getShell().getShellId();
 
         shellSelector = new SelectorSetType();
         SelectorType sel = new SelectorType();
